@@ -19,6 +19,7 @@ namespace HexDance
         public HexDisplay()
         {
             this.InitializeComponent();
+            this.CoverAllScreens();
 
             var palette = new Color[QueueLength];
             for (var i = 0; i < QueueLength; i++)
@@ -40,6 +41,13 @@ namespace HexDance
                 cp.ExStyle |= NativeMethods.WS_EX_TRANSPARENT | NativeMethods.WS_EX_NOACTIVATE;
                 return cp;
             }
+        }
+
+        private void CoverAllScreens()
+        {
+            var extents = Screen.AllScreens.Select(s => s.Bounds).Aggregate(Rectangle.Union);
+            this.Location = extents.Location;
+            this.Size = extents.Size;
         }
 
         private void CloseMenuItem_Click(object sender, EventArgs e)
@@ -109,6 +117,7 @@ namespace HexDance
             {
                 this.iconUpdate.Restart();
                 this.UpdateNotifyIcon();
+                this.CoverAllScreens();
             }
         }
 

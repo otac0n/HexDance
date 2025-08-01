@@ -75,7 +75,6 @@
             this.Text = "Hex Dance";
             this.TopMost = true;
             this.TransparencyKey = Color.Magenta;
-            this.WindowState = FormWindowState.Maximized;
             this.Paint += this.Form_Paint;
             this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
