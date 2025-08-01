@@ -1,0 +1,18 @@
+# Ignore all */bin/ and */obj/ folders...
+[Bb]in/
+[Oo]bj/
+
+# Ignore backup files.
+*.orig
+
+# Ignore all Operating System generated files.
+Thumbs.db
+
+# Ignore all Visual Studio generated files.
+*.sln.ide/
+.vs/
+*.suo
+*.user
+*.ncb
+*.[Cc]ache
+*.docstates
