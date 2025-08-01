@@ -53,12 +53,12 @@
             this.contextMenu.ImageScalingSize = new Size(24, 24);
             this.contextMenu.Items.AddRange(new ToolStripItem[] { this.closeToolStripMenuItem });
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new Size(241, 69);
+            this.contextMenu.Size = new Size(128, 36);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new Size(240, 32);
+            this.closeToolStripMenuItem.Size = new Size(127, 32);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += this.CloseMenuItem_Click;
             // 
@@ -72,7 +72,7 @@
             this.Name = "HexDisplay";
             this.ShowInTaskbar = false;
             this.StartPosition = FormStartPosition.Manual;
-            this.Text = "Form1";
+            this.Text = "Hex Dance";
             this.TopMost = true;
             this.TransparencyKey = Color.Magenta;
             this.WindowState = FormWindowState.Maximized;

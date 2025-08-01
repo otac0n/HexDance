@@ -1,13 +1,13 @@
-namespace HexDance
+﻿namespace HexDance
 {
     using System.Diagnostics;
     using System.Drawing.Drawing2D;
 
     public partial class HexDisplay : Form
     {
-        private static int QueueLength = 15;
-        private static int SegmentCount = 10;
-        private static float SegmentLength = 10f;
+        private static readonly int QueueLength = 15;
+        private static readonly int SegmentCount = 10;
+        private static readonly float SegmentLength = 10f;
 
         private readonly Color[] palette;
         private readonly List<GraphicsPath> paths = new(2 * QueueLength);
