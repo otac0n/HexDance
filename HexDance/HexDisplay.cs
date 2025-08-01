@@ -1,4 +1,6 @@
-﻿namespace HexDance
+﻿// Copyright © John Gietzen. All Rights Reserved. This source is subject to the MIT license. Please see license.md for more information.
+
+namespace HexDance
 {
     using System.Diagnostics;
     using System.Drawing.Drawing2D;
@@ -35,7 +37,7 @@
             get
             {
                 var cp = base.CreateParams;
-                cp.ExStyle |= NativeMethods.WS_EX_LAYERED | NativeMethods.WS_EX_TRANSPARENT | NativeMethods.WS_EX_NOACTIVATE;
+                cp.ExStyle |= NativeMethods.WS_EX_TRANSPARENT | NativeMethods.WS_EX_NOACTIVATE;
                 return cp;
             }
         }
