@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" onload="init();" shape-rendering="crispEdges" pointer-events="bounding-box">
+  <path /> <path /> <path /> <path /> <path />
+  <path /> <path /> <path /> <path /> <path />
+  <path /> <path /> <path /> <path /> <path />
+  <style>
+    path { fill: none; }
+    path:nth-of-type(1) { stroke: #000000; }
+    path:nth-of-type(2) { stroke: #20342F; }
+    path:nth-of-type(3) { stroke: #304D45; }
+    path:nth-of-type(4) { stroke: #3C6156; }
+    path:nth-of-type(5) { stroke: #467165; }
+    path:nth-of-type(6) { stroke: #4F8072; }
+    path:nth-of-type(7) { stroke: #588E7E; }
+    path:nth-of-type(8) { stroke: #609B8A; }
+    path:nth-of-type(9) { stroke: #67A694; }
+    path:nth-of-type(10) { stroke: #6EB29E; }
+    path:nth-of-type(11) { stroke: #75BCA8; }
+    path:nth-of-type(12) { stroke: #7BC7B1; }
+    path:nth-of-type(13) { stroke: #81D0BA; }
+    path:nth-of-type(14) { stroke: #87DAC2; }
+    path:nth-of-type(15) { stroke: #8DE3CA; }
+  </style>
+  <script>
+    /*<![CDATA[*/
+
+    let Tau = 2 * Math.PI;
+
+    let SegmentCount = 10;
+    let SegmentLength = 10;
+
+    let paths;
+    let cursor, lastCursor;
+
+    function init() {
+      paths = document.getElementsByTagName('path');
+      window.setInterval(update, 50);
+      window.addEventListener("mousemove", e => {
+          cursor = [e.clientX, e.clientY];
+          update();
+      });
+      window.addEventListener("mouseleave", e => {
+          cursor = null;
+      });
+    }
+
+    function update() {
+      for (let i = 0; i < paths.length - 1; i++)
+      {
+          paths[i].setAttribute('d', paths[i + 1].getAttribute('d'));
+      }
+
+      let path = '';
+      if (cursor)
+      {
+          let origin = getNearestHex(cursor);
+          let x = origin[0];
+          let y = origin[1];
+          path = 'm ' + x + ' ' + y;
+          for (let i = 0; i < SegmentCount; i++)
+          {
+              let dir = Math.floor(Math.random() * 3) * Tau / 3 + (i % 2 == 0 ? Tau / 6 : 0);
+              let dx = Math.sin(dir) * SegmentLength;
+              let dy = Math.cos(dir) * SegmentLength;
+              path += ' l ' + dx + ' ' + dy;
+              x = x + dx;
+              y = y + dy;
+          }
+
+          paths[paths.length - 1].setAttribute('d', path);
+      }
+
+      lastCursor = cursor;
+    }
+
+    function getNearestHex(point)
+    {
+        let x = point[0] / SegmentLength;
+        let y = point[1] / SegmentLength;
+        let q = Math.sqrt(3) / 3 * x - 1 / 3 * y;
+        let r = 2 / 3 * y;
+        let s = -(q + r);
+
+        let qRound = Math.round(q);
+        let rRound = Math.round(r);
+        let sRound = Math.round(s);
+        let qDiff = Math.abs(qRound - q);
+        let rDiff = Math.abs(rRound - r);
+        let sDiff = Math.abs(sRound - s);
+
+        if (qDiff > rDiff && qDiff > sDiff)
+        {
+            q = -(rRound + sRound);
+            r = rRound;
+        }
+        else if (rDiff > sDiff)
+        {
+            q = qRound;
+            r = -(qRound + sRound);
+        }
+        else
+        {
+            q = qRound;
+            r = rRound;
+        }
+
+        x = Math.sqrt(3) * (q * SegmentLength) + Math.sqrt(3) / 2 * (r * SegmentLength);
+        y = 3 / 2 * (r * SegmentLength);
+        return [x, y];
+    }
+
+    /*]]>*/
+  </script>
+</svg>
