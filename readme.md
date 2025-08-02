@@ -5,4 +5,4 @@ A hex-styled cursor trail.
 
 ![Demo](Demo.webp)
 
-[Animated SVG version](hex_dance.svg)
+[Animated SVG version](//otac0n.com/HexDance)

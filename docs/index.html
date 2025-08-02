@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hex Dance SVG Demo</title>
+    <style>
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            color: white;
+            background-color: black;
+        }
+        body {
+            width: 50%;
+            padding: 2em;
+            margin: auto;
+            text-align: center;
+            font-family: Helvetica, Arial, sans-serif;
+            pointer-events: none;
+        }
+        h1, h2 { margin: 0; }
+        h1 {
+            font-size: 400%;
+            font-family: 'Helvetica UltraCompressed', Helvetica, Arial, sans-serif;
+        }
+        h2 {
+            font-size: 75%;
+            letter-spacing: 1em;
+        }
+        #display {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 200vh;
+            z-index: -1;
+            pointer-events: all;
+        }
+    </style>
+  </head>
+  <body>
+    <h2>Tactical SVG Action</h2>
+    <h1>Hex Dance SVG Demo</h1>
+    <object id="display" type="image/svg+xml" data="hex_dance.svg">
+      <img src="hex_dance.svg" />
+    </object>
+  </body>
+</html>
