@@ -7,13 +7,18 @@ namespace HexDance
 
     public partial class HexDisplay : Form
     {
-        private static readonly int QueueLength = 15;
+        private static readonly TimeSpan MinInterval = TimeSpan.FromMilliseconds(50);
+        private static readonly TimeSpan DisplayTime = 15 * MinInterval;
+        private static readonly int MaxQueueLength = 15;
         private static readonly int SegmentCount = 10;
         private static readonly float SegmentLength = 10f;
 
-        private readonly Color[] palette;
-        private readonly List<GraphicsPath> paths = new(2 * QueueLength);
-        private readonly Stopwatch iconUpdate = new();
+        private static readonly Color BrightColor = Color.FromArgb(0x92ECD2);
+        private static readonly Color DarkColor = Color.Black;
+
+        private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = new(2 * MaxQueueLength);
+        private readonly Stopwatch clock = Stopwatch.StartNew();
+        private TimeSpan iconUpdate = TimeSpan.Zero;
         private PointF lastCursor;
 
         public HexDisplay()
@@ -21,13 +26,6 @@ namespace HexDance
             this.InitializeComponent();
             this.CoverAllScreens();
 
-            var palette = new Color[QueueLength];
-            for (var i = 0; i < QueueLength; i++)
-            {
-                palette[i] = Blend((float)i / QueueLength, Color.FromArgb(0x92ECD2), Color.Black);
-            }
-
-            this.palette = palette;
             this.lastCursor = Cursor.Position;
         }
 
@@ -57,13 +55,15 @@ namespace HexDance
 
         private void UpdateTimer_Tick(object sender, EventArgs e)
         {
+            var now = this.clock.Elapsed;
             var paths = this.paths;
 
             var cursor = Cursor.Position;
             var last = this.lastCursor;
 
             var distance = new SizeF(cursor.X - last.X, cursor.Y - last.Y);
-            var lerpCount = Math.Max(1, Math.Min(QueueLength, MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / (SegmentLength * MathF.Sqrt(SegmentCount) / 2)));
+            var randomWalkDistance = SegmentLength * MathF.Sqrt(SegmentCount);
+            var lerpCount = Math.Max(1, Math.Min(MaxQueueLength, 2 * MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / randomWalkDistance));
             for (var h = 1; h <= lerpCount; h++)
             {
                 var path = new GraphicsPath();
@@ -80,7 +80,7 @@ namespace HexDance
                     (x, y) = (x + dx, y + dy);
                 }
 
-                paths.Add(path);
+                paths.Add((now, path));
             }
 
             this.lastCursor = cursor;
@@ -91,21 +91,24 @@ namespace HexDance
         {
             var g = e.Graphics;
             var paths = this.paths;
+            var now = this.clock.Elapsed;
+            var expireTime = now - DisplayTime;
 
             var state = g.Save();
             try
             {
                 using var clearPen = new Pen(this.BackColor);
-                while (paths.Count > QueueLength)
+                while (paths.Count > 0 && (paths.Count > MaxQueueLength || paths[0].Time <= expireTime))
                 {
-                    g.DrawPath(clearPen, paths[0]);
+                    g.DrawPath(clearPen, paths[0].Path);
                     paths.RemoveAt(0);
                 }
 
                 for (var i = 0; i < paths.Count; i++)
                 {
-                    using var pen = new Pen(this.palette[i + (QueueLength - paths.Count)]);
-                    g.DrawPath(pen, paths[i]);
+                    var entry = paths[i];
+                    using var pen = new Pen(Palette(now - entry.Time));
+                    g.DrawPath(pen, entry.Path);
                 }
             }
             finally
@@ -113,15 +116,15 @@ namespace HexDance
                 g.Restore(state);
             }
 
-            if (!this.iconUpdate.IsRunning || this.iconUpdate.Elapsed > TimeSpan.FromSeconds(1))
+            if (now >= this.iconUpdate)
             {
-                this.iconUpdate.Restart();
-                this.UpdateNotifyIcon();
+                this.iconUpdate = now + TimeSpan.FromSeconds(1);
+                this.UpdateNotifyIcon(now);
                 this.CoverAllScreens();
             }
         }
 
-        private void UpdateNotifyIcon()
+        private void UpdateNotifyIcon(TimeSpan now)
         {
             var paths = this.paths;
 
@@ -137,8 +140,9 @@ namespace HexDance
 
                 for (var i = 0; i < paths.Count; i++)
                 {
-                    using var pen = new Pen(this.palette[i + (QueueLength - paths.Count)]);
-                    g.DrawPath(pen, paths[i]);
+                    var entry = this.paths[i];
+                    using var pen = new Pen(Palette(now - entry.Time));
+                    g.DrawPath(pen, entry.Path);
                 }
             }
 
@@ -151,6 +155,10 @@ namespace HexDance
                 NativeMethods.DestroyIcon(oldIcon.Handle);
             }
         }
+
+        public static Color Palette(TimeSpan elapsed) => Blend(elapsed / DisplayTime, DarkColor, BrightColor);
+
+        public static Color Blend(double amount, Color a, Color b) => Blend((float)amount, a, b);
 
         public static Color Blend(float amount, Color a, Color b)
         {
