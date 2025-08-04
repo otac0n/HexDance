@@ -4,27 +4,24 @@ namespace HexDance
 {
     using System.Diagnostics;
     using System.Drawing.Drawing2D;
+    using HexDance.Properties;
 
     public partial class HexDisplay : Form
     {
-        private static readonly TimeSpan MinInterval = TimeSpan.FromMilliseconds(50);
-        private static readonly TimeSpan DisplayTime = 15 * MinInterval;
-        private static readonly int MaxQueueLength = 15;
-        private static readonly int SegmentCount = 10;
-        private static readonly float SegmentLength = 10f;
+        private readonly Settings settings;
 
-        private static readonly Color BrightColor = Color.FromArgb(0x92ECD2);
-        private static readonly Color DarkColor = Color.Black;
-
-        private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = new(2 * MaxQueueLength);
+        private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = [];
         private readonly Stopwatch clock = Stopwatch.StartNew();
         private TimeSpan iconUpdate = TimeSpan.Zero;
         private PointF lastCursor;
 
-        public HexDisplay()
+        public HexDisplay(Settings settings)
         {
+            this.settings = settings;
+
             this.InitializeComponent();
             this.CoverAllScreens();
+            this.updateTimer.Interval = (int)Math.Round(settings.UpdateInterval.TotalMilliseconds);
 
             this.lastCursor = Cursor.Position;
         }
@@ -62,20 +59,20 @@ namespace HexDance
             var last = this.lastCursor;
 
             var distance = new SizeF(cursor.X - last.X, cursor.Y - last.Y);
-            var randomWalkDistance = SegmentLength * MathF.Sqrt(SegmentCount);
-            var lerpCount = Math.Max(1, Math.Min(MaxQueueLength, 2 * MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / randomWalkDistance));
+            var randomWalkDistance = this.settings.HexGridSize * MathF.Sqrt(this.settings.PathSegmentCount);
+            var lerpCount = Math.Max(1, Math.Min(this.settings.PathQueueLength, 2 * MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / randomWalkDistance));
             for (var h = 1; h <= lerpCount; h++)
             {
                 var path = new GraphicsPath();
                 var origin = Lerp(h / lerpCount, last, cursor);
-                var c = GetNearestHex(origin, SegmentLength);
+                var c = GetNearestHex(origin, this.settings.HexGridSize);
                 var (x, y) = (c.X, c.Y);
-                for (var i = 0; i < SegmentCount; i++)
+                for (var i = 0; i < this.settings.PathSegmentCount; i++)
                 {
                     var dir = Random.Shared.Next(3) * MathF.Tau / 3 + (i % 2 == 0 ? MathF.Tau / 6 : 0);
                     var (dx, dy) = MathF.SinCos(dir);
-                    dx *= SegmentLength;
-                    dy *= SegmentLength;
+                    dx *= this.settings.HexGridSize;
+                    dy *= this.settings.HexGridSize;
                     path.AddLine(x, y, x + dx, y + dy);
                     (x, y) = (x + dx, y + dy);
                 }
@@ -92,13 +89,13 @@ namespace HexDance
             var g = e.Graphics;
             var paths = this.paths;
             var now = this.clock.Elapsed;
-            var expireTime = now - DisplayTime;
+            var expireTime = now - this.settings.DisplayTime;
 
             var state = g.Save();
             try
             {
                 using var clearPen = new Pen(this.BackColor);
-                while (paths.Count > 0 && (paths.Count > MaxQueueLength || paths[0].Time <= expireTime))
+                while (paths.Count > 0 && (paths.Count > this.settings.PathQueueLength || paths[0].Time <= expireTime))
                 {
                     g.DrawPath(clearPen, paths[0].Path);
                     paths.RemoveAt(0);
@@ -132,7 +129,7 @@ namespace HexDance
             using (var g = Graphics.FromImage(bmp))
             {
                 var offset = new Matrix();
-                var scale = 3 / SegmentLength;
+                var scale = 3 / this.settings.HexGridSize;
                 offset.Scale(scale, scale);
                 offset.Translate(-Cursor.Position.X + 12 / scale, -Cursor.Position.Y + 12 / scale);
                 g.Transform = offset;
@@ -156,7 +153,7 @@ namespace HexDance
             }
         }
 
-        public static Color Palette(TimeSpan elapsed) => Blend(elapsed / DisplayTime, DarkColor, BrightColor);
+        public Color Palette(TimeSpan elapsed) => Blend(elapsed / this.settings.DisplayTime, this.settings.DarkColor, this.settings.BrightColor);
 
         public static Color Blend(double amount, Color a, Color b) => Blend((float)amount, a, b);
 

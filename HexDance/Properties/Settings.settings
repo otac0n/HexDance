@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HexDance.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="UpdateInterval" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">00:00:00.0500000</Value>
+    </Setting>
+    <Setting Name="DisplayTime" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">00:00:00.7500000</Value>
+    </Setting>
+    <Setting Name="PathQueueLength" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="PathSegmentCount" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="HexGridSize" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="BrightColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">146, 236, 210</Value>
+    </Setting>
+    <Setting Name="DarkColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Black</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
