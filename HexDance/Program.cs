@@ -58,6 +58,19 @@ namespace HexDance
             CustomParser = ParseColorOption,
         };
 
+        public static readonly Option<Color> ChromaKeyColor = new(
+            name: "--chromaKey")
+        {
+            DefaultValueFactory = _ => Settings.Default.ChromaKeyColor,
+            CustomParser = ParseColorOption,
+        };
+
+        public static readonly Option<bool> DoubleBuffered = new(
+            name: "--doubleBuffered")
+        {
+            DefaultValueFactory = _ => Settings.Default.DoubleBuffered,
+        };
+
         private static TimeSpan ParseTimeSpanOption(ArgumentResult result) => TimeSpanParser.Parse(string.Join(" ", result.Tokens.Select(t => t.Value)));
 
         private static Color ParseColorOption(ArgumentResult result) => ColorTranslator.FromHtml(result.Tokens.Single().Value);
@@ -76,6 +89,8 @@ namespace HexDance
             rootCommand.Options.Add(HexGridSize);
             rootCommand.Options.Add(BrightColor);
             rootCommand.Options.Add(DarkColor);
+            rootCommand.Options.Add(ChromaKeyColor);
+            rootCommand.Options.Add(DoubleBuffered);
 
             rootCommand.SetAction(static parseResult =>
             {
@@ -87,6 +102,8 @@ namespace HexDance
                 settings.HexGridSize = parseResult.GetValue(HexGridSize);
                 settings.BrightColor = parseResult.GetValue(BrightColor);
                 settings.DarkColor = parseResult.GetValue(DarkColor);
+                settings.ChromaKeyColor = parseResult.GetValue(ChromaKeyColor);
+                settings.DoubleBuffered = parseResult.GetValue(DoubleBuffered);
 
                 ApplicationConfiguration.Initialize();
                 Application.Run(new HexDisplay(settings));

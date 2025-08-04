@@ -106,5 +106,29 @@ namespace HexDance.Properties {
                 this["DarkColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DoubleBuffered {
+            get {
+                return ((bool)(this["DoubleBuffered"]));
+            }
+            set {
+                this["DoubleBuffered"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Magenta")]
+        public global::System.Drawing.Color ChromaKeyColor {
+            get {
+                return ((global::System.Drawing.Color)(this["ChromaKeyColor"]));
+            }
+            set {
+                this["ChromaKeyColor"] = value;
+            }
+        }
     }
 }

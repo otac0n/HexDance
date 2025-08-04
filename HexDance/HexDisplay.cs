@@ -22,6 +22,8 @@ namespace HexDance
             this.InitializeComponent();
             this.CoverAllScreens();
             this.updateTimer.Interval = (int)Math.Round(settings.UpdateInterval.TotalMilliseconds);
+            this.TransparencyKey = this.BackColor = settings.ChromaKeyColor;
+            this.DoubleBuffered = settings.DoubleBuffered;
 
             this.lastCursor = Cursor.Position;
         }
@@ -94,11 +96,11 @@ namespace HexDance
             var state = g.Save();
             try
             {
-                using var clearPen = new Pen(this.BackColor);
-                while (paths.Count > 0 && (paths.Count > this.settings.PathQueueLength || paths[0].Time <= expireTime))
+                paths.RemoveAll(entry => entry.Time <= expireTime);
+                var extra = paths.Count - this.settings.PathQueueLength;
+                if (extra > 0)
                 {
-                    g.DrawPath(clearPen, paths[0].Path);
-                    paths.RemoveAt(0);
+                    paths.RemoveRange(0, extra);
                 }
 
                 for (var i = 0; i < paths.Count; i++)

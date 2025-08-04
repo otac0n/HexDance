@@ -39,7 +39,6 @@
             // updateTimer
             // 
             this.updateTimer.Enabled = true;
-            this.updateTimer.Interval = 50;
             this.updateTimer.Tick += this.UpdateTimer_Tick;
             // 
             // notifyIcon
@@ -66,7 +65,6 @@
             // 
             this.AutoScaleDimensions = new SizeF(10F, 25F);
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.BackColor = Color.Magenta;
             this.ClientSize = new Size(800, 450);
             this.FormBorderStyle = FormBorderStyle.None;
             this.Name = "HexDisplay";
@@ -74,7 +72,6 @@
             this.StartPosition = FormStartPosition.Manual;
             this.Text = "Hex Dance";
             this.TopMost = true;
-            this.TransparencyKey = Color.Magenta;
             this.Paint += this.Form_Paint;
             this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
