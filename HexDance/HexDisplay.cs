@@ -4,6 +4,7 @@ namespace HexDance
 {
     using System.Diagnostics;
     using System.Drawing.Drawing2D;
+    using System.Runtime.InteropServices;
 
     public partial class HexDisplay : Form
     {
@@ -15,6 +16,7 @@ namespace HexDance
         private readonly List<GraphicsPath> paths = new(2 * QueueLength);
         private readonly Stopwatch iconUpdate = new();
         private PointF lastCursor;
+        private nint mouseHandle;
 
         public HexDisplay()
         {
@@ -29,9 +31,30 @@ namespace HexDance
 
             this.palette = palette;
             this.lastCursor = Cursor.Position;
+
+            var mainModule = Process.GetCurrentProcess().MainModule!;
+            this.mouseHandle = NativeMethods.SetWindowsHookEx(NativeMethods.WH_MOUSE_LL, this.MouseHook, NativeMethods.GetModuleHandle(mainModule.ModuleName), 0);
         }
 
+        /// <inheritdoc/>
         protected override bool ShowWithoutActivation => true;
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (this.components != null))
+            {
+                this.components.Dispose();
+            }
+
+            if (this.mouseHandle != nint.Zero)
+            {
+                NativeMethods.UnhookWindowsHookEx(this.mouseHandle);
+                this.mouseHandle = nint.Zero;
+            }
+
+            base.Dispose(disposing);
+        }
 
         protected override CreateParams CreateParams
         {
@@ -53,6 +76,23 @@ namespace HexDance
         private void CloseMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private IntPtr MouseHook(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (nCode >= 0)
+            {
+                var msg = wParam.ToInt32();
+                var hookStruct = Marshal.PtrToStructure<NativeMethods.MSLLHOOKSTRUCT>(lParam);
+                this.Invoke(() => this.OnMouseEvent(msg, hookStruct));
+            }
+
+            return NativeMethods.CallNextHookEx(this.mouseHandle, nCode, wParam, lParam);
+        }
+
+        private void OnMouseEvent(int message, NativeMethods.MSLLHOOKSTRUCT info)
+        {
+            Debug.WriteLine($"Message: {message:X}, Info: ({info.point.X}, {info.point.Y}), data:{info.mouseData:X}, T={info.time}");
         }
 
         private void UpdateTimer_Tick(object sender, EventArgs e)
