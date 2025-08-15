@@ -13,6 +13,7 @@ namespace HexDance
         private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = [];
         private readonly Stopwatch clock = Stopwatch.StartNew();
         private TimeSpan iconUpdate = TimeSpan.Zero;
+        private bool render = true;
         private PointF lastCursor;
 
         public HexDisplay(Settings settings)
@@ -93,16 +94,15 @@ namespace HexDance
             var now = this.clock.Elapsed;
             var expireTime = now - this.settings.DisplayTime;
 
-            var state = g.Save();
-            try
+            paths.RemoveAll(entry => entry.Time <= expireTime);
+            var extra = paths.Count - this.settings.PathQueueLength;
+            if (extra > 0)
             {
-                paths.RemoveAll(entry => entry.Time <= expireTime);
-                var extra = paths.Count - this.settings.PathQueueLength;
-                if (extra > 0)
-                {
-                    paths.RemoveRange(0, extra);
-                }
+                paths.RemoveRange(0, extra);
+            }
 
+            if (this.render)
+            {
                 for (var i = 0; i < paths.Count; i++)
                 {
                     var entry = paths[i];
@@ -110,14 +110,11 @@ namespace HexDance
                     g.DrawPath(pen, entry.Path);
                 }
             }
-            finally
-            {
-                g.Restore(state);
-            }
 
             if (now >= this.iconUpdate)
             {
                 this.iconUpdate = now + TimeSpan.FromSeconds(1);
+                this.render = !MouseIsCaptured() && !this.FocusIsFullscreen();
                 this.UpdateNotifyIcon(now);
                 this.CoverAllScreens();
             }
@@ -219,5 +216,27 @@ namespace HexDance
 
         public static PointF Lerp(float amount, PointF start, PointF endPoint) =>
             new(start.X + amount * (endPoint.X - start.X), start.Y + amount * (endPoint.Y - start.Y));
+
+        public static bool MouseIsCaptured() =>
+            NativeMethods.GetCapture() != nint.Zero;
+
+        public bool FocusIsFullscreen()
+        {
+            var hWnd = NativeMethods.GetForegroundWindow();
+            if (hWnd == nint.Zero ||
+                hWnd == this.Handle ||
+                !NativeMethods.GetWindowRect(hWnd, out var rect))
+            {
+                return false;
+            }
+
+            var screen = Screen.FromHandle(hWnd);
+            var bounds = screen.Bounds;
+
+            return rect.Left <= bounds.Left &&
+                   rect.Top <= bounds.Top &&
+                   rect.Right >= bounds.Right &&
+                   rect.Bottom >= bounds.Bottom;
+        }
     }
 }
