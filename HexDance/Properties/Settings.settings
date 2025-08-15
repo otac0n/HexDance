@@ -29,5 +29,8 @@
     <Setting Name="ChromaKeyColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Magenta</Value>
     </Setting>
+    <Setting Name="Opacity" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0.5</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

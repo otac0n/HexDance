@@ -25,6 +25,7 @@ namespace HexDance
             this.updateTimer.Interval = (int)Math.Round(settings.UpdateInterval.TotalMilliseconds);
             this.TransparencyKey = this.BackColor = settings.ChromaKeyColor;
             this.DoubleBuffered = settings.DoubleBuffered;
+            this.Opacity = settings.Opacity;
 
             this.lastCursor = Cursor.Position;
         }

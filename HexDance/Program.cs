@@ -71,6 +71,12 @@ namespace HexDance
             DefaultValueFactory = _ => Settings.Default.DoubleBuffered,
         };
 
+        public static readonly Option<double> Opacity = new(
+            name: "--opacity")
+        {
+            DefaultValueFactory = _ => Settings.Default.Opacity,
+        };
+
         private static TimeSpan ParseTimeSpanOption(ArgumentResult result) => TimeSpanParser.Parse(string.Join(" ", result.Tokens.Select(t => t.Value)));
 
         private static Color ParseColorOption(ArgumentResult result) => ColorTranslator.FromHtml(result.Tokens.Single().Value);
@@ -91,6 +97,7 @@ namespace HexDance
             rootCommand.Options.Add(DarkColor);
             rootCommand.Options.Add(ChromaKeyColor);
             rootCommand.Options.Add(DoubleBuffered);
+            rootCommand.Options.Add(Opacity);
 
             rootCommand.SetAction(static parseResult =>
             {
@@ -104,6 +111,7 @@ namespace HexDance
                 settings.DarkColor = parseResult.GetValue(DarkColor);
                 settings.ChromaKeyColor = parseResult.GetValue(ChromaKeyColor);
                 settings.DoubleBuffered = parseResult.GetValue(DoubleBuffered);
+                settings.Opacity = parseResult.GetValue(Opacity);
 
                 ApplicationConfiguration.Initialize();
                 Application.Run(new HexDisplay(settings));
