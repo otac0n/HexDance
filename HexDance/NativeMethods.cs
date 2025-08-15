@@ -10,8 +10,13 @@ namespace HexDance
         public const int WS_EX_TRANSPARENT = 0x20;
         public const int WH_MOUSE_LL = 14;
         public const int WM_LBUTTONDOWN = 0x0201;
+        public const int WM_LBUTTONUP = 0x0202;
         public const int WM_RBUTTONDOWN = 0x0204;
+        public const int WM_RBUTTONUP = 0x0205;
         public const int WM_MBUTTONDOWN = 0x0207;
+        public const int WM_MBUTTONUP = 0x0208;
+        public const int WM_XBUTTONDOWN = 0x020A;
+        public const int WM_XBUTTONUP = 0x020B;
 
         public delegate nint LowLevelMouseProc(int nCode, nint wParam, nint lParam);
 

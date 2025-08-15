@@ -16,6 +16,7 @@ namespace HexDance
         private readonly NativeMethods.LowLevelMouseProc mouseProc;
         private TimeSpan iconUpdate = TimeSpan.Zero;
         private bool render = true;
+        private MouseButtons buttonState;
         private PointF lastCursor;
         private nint mouseHandle;
 
@@ -93,11 +94,34 @@ namespace HexDance
 
         private void OnMouseEvent(int message, NativeMethods.MSLLHOOKSTRUCT info)
         {
-            Debug.WriteLine($"Message: {message:X}, Info: ({info.point.X}, {info.point.Y}), data:{info.mouseData:X}, T={info.time}");
+            this.buttonState = message switch
+            {
+                NativeMethods.WM_LBUTTONDOWN => this.buttonState | MouseButtons.Left,
+                NativeMethods.WM_LBUTTONUP => this.buttonState & ~MouseButtons.Left,
+                NativeMethods.WM_RBUTTONDOWN => this.buttonState | MouseButtons.Right,
+                NativeMethods.WM_RBUTTONUP => this.buttonState & ~MouseButtons.Right,
+                NativeMethods.WM_MBUTTONDOWN => this.buttonState | MouseButtons.Middle,
+                NativeMethods.WM_MBUTTONUP => this.buttonState & ~MouseButtons.Middle,
+                NativeMethods.WM_XBUTTONDOWN => (info.mouseData >> 16) switch
+                {
+                    1 => this.buttonState | MouseButtons.XButton1,
+                    2 => this.buttonState | MouseButtons.XButton2,
+                    _ => this.buttonState,
+                },
+                NativeMethods.WM_XBUTTONUP => (info.mouseData >> 16) switch
+                {
+                    1 => this.buttonState & ~MouseButtons.XButton1,
+                    2 => this.buttonState & ~MouseButtons.XButton2,
+                    _ => this.buttonState,
+                },
+                _ => this.buttonState,
+            };
         }
 
         private void UpdateTimer_Tick(object sender, EventArgs e)
         {
+            Debug.WriteLine($"Button state {this.buttonState}");
+
             var now = this.clock.Elapsed;
             var paths = this.paths;
 
