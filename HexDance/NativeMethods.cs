@@ -13,28 +13,42 @@ namespace HexDance
         public const int WM_RBUTTONDOWN = 0x0204;
         public const int WM_MBUTTONDOWN = 0x0207;
 
-        public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+        public delegate nint LowLevelMouseProc(int nCode, nint wParam, nint lParam);
 
         [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool DestroyIcon(IntPtr hIcon);
+        public static extern bool DestroyIcon(nint hIcon);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+        public static extern nint GetCapture();
 
         [DllImport("user32.dll")]
-        public static extern bool UnhookWindowsHookEx(IntPtr hHook);
+        public static extern nint GetForegroundWindow();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool GetWindowRect(nint hWnd, out RECT lpRect);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr CallNextHookEx(IntPtr hHook, int nCode, IntPtr wParam, IntPtr lParam);
+        public static extern nint SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, nint hMod, uint dwThreadId);
+
+        [DllImport("user32.dll")]
+        public static extern bool UnhookWindowsHookEx(nint hHook);
+
+        [DllImport("user32.dll")]
+        public static extern nint CallNextHookEx(nint hHook, int nCode, nint wParam, nint lParam);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr GetModuleHandle(string lpModuleName);
+        public static extern nint GetModuleHandle(string lpModuleName);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
-            public int X;
-            public int Y;
+            public int X, Y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left, Top, Right, Bottom;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -44,7 +58,7 @@ namespace HexDance
             public uint mouseData;
             public uint flags;
             public uint time;
-            public IntPtr dwExtraInfo;
+            public nint dwExtraInfo;
         }
     }
 }

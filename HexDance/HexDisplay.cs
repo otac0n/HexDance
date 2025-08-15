@@ -5,31 +5,30 @@ namespace HexDance
     using System.Diagnostics;
     using System.Drawing.Drawing2D;
     using System.Runtime.InteropServices;
+    using HexDance.Properties;
 
     public partial class HexDisplay : Form
     {
-        private static readonly int QueueLength = 15;
-        private static readonly int SegmentCount = 10;
-        private static readonly float SegmentLength = 10f;
+        private readonly Settings settings;
 
-        private readonly Color[] palette;
-        private readonly List<GraphicsPath> paths = new(2 * QueueLength);
-        private readonly Stopwatch iconUpdate = new();
+        private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = [];
+        private readonly Stopwatch clock = Stopwatch.StartNew();
+        private TimeSpan iconUpdate = TimeSpan.Zero;
+        private bool render = true;
         private PointF lastCursor;
         private nint mouseHandle;
 
-        public HexDisplay()
+        public HexDisplay(Settings settings)
         {
+            this.settings = settings;
+
             this.InitializeComponent();
             this.CoverAllScreens();
+            this.updateTimer.Interval = (int)Math.Round(settings.UpdateInterval.TotalMilliseconds);
+            this.TransparencyKey = this.BackColor = settings.ChromaKeyColor;
+            this.DoubleBuffered = settings.DoubleBuffered;
+            this.Opacity = settings.Opacity;
 
-            var palette = new Color[QueueLength];
-            for (var i = 0; i < QueueLength; i++)
-            {
-                palette[i] = Blend((float)i / QueueLength, Color.FromArgb(0x92ECD2), Color.Black);
-            }
-
-            this.palette = palette;
             this.lastCursor = Cursor.Position;
 
             var mainModule = Process.GetCurrentProcess().MainModule!;
@@ -78,7 +77,7 @@ namespace HexDance
             this.Close();
         }
 
-        private IntPtr MouseHook(int nCode, IntPtr wParam, IntPtr lParam)
+        private nint MouseHook(int nCode, nint wParam, nint lParam)
         {
             if (nCode >= 0)
             {
@@ -97,30 +96,32 @@ namespace HexDance
 
         private void UpdateTimer_Tick(object sender, EventArgs e)
         {
+            var now = this.clock.Elapsed;
             var paths = this.paths;
 
             var cursor = Cursor.Position;
             var last = this.lastCursor;
 
             var distance = new SizeF(cursor.X - last.X, cursor.Y - last.Y);
-            var lerpCount = Math.Max(1, Math.Min(QueueLength, MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / (SegmentLength * MathF.Sqrt(SegmentCount) / 2)));
+            var randomWalkDistance = this.settings.HexGridSize * MathF.Sqrt(this.settings.PathSegmentCount);
+            var lerpCount = Math.Max(1, Math.Min(this.settings.PathQueueLength, 2 * MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / randomWalkDistance));
             for (var h = 1; h <= lerpCount; h++)
             {
                 var path = new GraphicsPath();
                 var origin = Lerp(h / lerpCount, last, cursor);
-                var c = GetNearestHex(origin, SegmentLength);
+                var c = GetNearestHex(origin, this.settings.HexGridSize);
                 var (x, y) = (c.X, c.Y);
-                for (var i = 0; i < SegmentCount; i++)
+                for (var i = 0; i < this.settings.PathSegmentCount; i++)
                 {
                     var dir = Random.Shared.Next(3) * MathF.Tau / 3 + (i % 2 == 0 ? MathF.Tau / 6 : 0);
                     var (dx, dy) = MathF.SinCos(dir);
-                    dx *= SegmentLength;
-                    dy *= SegmentLength;
+                    dx *= this.settings.HexGridSize;
+                    dy *= this.settings.HexGridSize;
                     path.AddLine(x, y, x + dx, y + dy);
                     (x, y) = (x + dx, y + dy);
                 }
 
-                paths.Add(path);
+                paths.Add((now, path));
             }
 
             this.lastCursor = cursor;
@@ -131,37 +132,36 @@ namespace HexDance
         {
             var g = e.Graphics;
             var paths = this.paths;
+            var now = this.clock.Elapsed;
+            var expireTime = now - this.settings.DisplayTime;
 
-            var state = g.Save();
-            try
+            paths.RemoveAll(entry => entry.Time <= expireTime);
+            var extra = paths.Count - this.settings.PathQueueLength;
+            if (extra > 0)
             {
-                using var clearPen = new Pen(this.BackColor);
-                while (paths.Count > QueueLength)
-                {
-                    g.DrawPath(clearPen, paths[0]);
-                    paths.RemoveAt(0);
-                }
+                paths.RemoveRange(0, extra);
+            }
 
+            if (this.render)
+            {
                 for (var i = 0; i < paths.Count; i++)
                 {
-                    using var pen = new Pen(this.palette[i + (QueueLength - paths.Count)]);
-                    g.DrawPath(pen, paths[i]);
+                    var entry = paths[i];
+                    using var pen = new Pen(Palette(now - entry.Time));
+                    g.DrawPath(pen, entry.Path);
                 }
             }
-            finally
-            {
-                g.Restore(state);
-            }
 
-            if (!this.iconUpdate.IsRunning || this.iconUpdate.Elapsed > TimeSpan.FromSeconds(1))
+            if (now >= this.iconUpdate)
             {
-                this.iconUpdate.Restart();
-                this.UpdateNotifyIcon();
+                this.iconUpdate = now + TimeSpan.FromSeconds(1);
+                this.render = !MouseIsCaptured() && !this.FocusIsFullscreen();
+                this.UpdateNotifyIcon(now);
                 this.CoverAllScreens();
             }
         }
 
-        private void UpdateNotifyIcon()
+        private void UpdateNotifyIcon(TimeSpan now)
         {
             var paths = this.paths;
 
@@ -169,7 +169,7 @@ namespace HexDance
             using (var g = Graphics.FromImage(bmp))
             {
                 var offset = new Matrix();
-                var scale = 3 / SegmentLength;
+                var scale = 3 / this.settings.HexGridSize;
                 offset.Scale(scale, scale);
                 offset.Translate(-Cursor.Position.X + 12 / scale, -Cursor.Position.Y + 12 / scale);
                 g.Transform = offset;
@@ -177,8 +177,9 @@ namespace HexDance
 
                 for (var i = 0; i < paths.Count; i++)
                 {
-                    using var pen = new Pen(this.palette[i + (QueueLength - paths.Count)]);
-                    g.DrawPath(pen, paths[i]);
+                    var entry = this.paths[i];
+                    using var pen = new Pen(Palette(now - entry.Time));
+                    g.DrawPath(pen, entry.Path);
                 }
             }
 
@@ -191,6 +192,10 @@ namespace HexDance
                 NativeMethods.DestroyIcon(oldIcon.Handle);
             }
         }
+
+        public Color Palette(TimeSpan elapsed) => Blend(elapsed / this.settings.DisplayTime, this.settings.DarkColor, this.settings.BrightColor);
+
+        public static Color Blend(double amount, Color a, Color b) => Blend((float)amount, a, b);
 
         public static Color Blend(float amount, Color a, Color b)
         {
@@ -252,5 +257,27 @@ namespace HexDance
 
         public static PointF Lerp(float amount, PointF start, PointF endPoint) =>
             new(start.X + amount * (endPoint.X - start.X), start.Y + amount * (endPoint.Y - start.Y));
+
+        public static bool MouseIsCaptured() =>
+            NativeMethods.GetCapture() != nint.Zero;
+
+        public bool FocusIsFullscreen()
+        {
+            var hWnd = NativeMethods.GetForegroundWindow();
+            if (hWnd == nint.Zero ||
+                hWnd == this.Handle ||
+                !NativeMethods.GetWindowRect(hWnd, out var rect))
+            {
+                return false;
+            }
+
+            var screen = Screen.FromHandle(hWnd);
+            var bounds = screen.Bounds;
+
+            return rect.Left <= bounds.Left &&
+                   rect.Top <= bounds.Top &&
+                   rect.Right >= bounds.Right &&
+                   rect.Bottom >= bounds.Bottom;
+        }
     }
 }
