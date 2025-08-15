@@ -13,6 +13,7 @@ namespace HexDance
 
         private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = [];
         private readonly Stopwatch clock = Stopwatch.StartNew();
+        private readonly NativeMethods.LowLevelMouseProc mouseProc;
         private TimeSpan iconUpdate = TimeSpan.Zero;
         private bool render = true;
         private PointF lastCursor;
@@ -32,7 +33,8 @@ namespace HexDance
             this.lastCursor = Cursor.Position;
 
             var mainModule = Process.GetCurrentProcess().MainModule!;
-            this.mouseHandle = NativeMethods.SetWindowsHookEx(NativeMethods.WH_MOUSE_LL, this.MouseHook, NativeMethods.GetModuleHandle(mainModule.ModuleName), 0);
+            this.mouseProc = this.MouseHook;
+            this.mouseHandle = NativeMethods.SetWindowsHookEx(NativeMethods.WH_MOUSE_LL, this.mouseProc, NativeMethods.GetModuleHandle(mainModule.ModuleName), 0);
         }
 
         /// <inheritdoc/>
