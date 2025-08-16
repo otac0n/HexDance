@@ -38,72 +38,72 @@ namespace HexDance.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.7500000")]
-        public global::System.TimeSpan DisplayTime {
+        public global::System.TimeSpan GridDisplayTime {
             get {
-                return ((global::System.TimeSpan)(this["DisplayTime"]));
+                return ((global::System.TimeSpan)(this["GridDisplayTime"]));
             }
             set {
-                this["DisplayTime"] = value;
+                this["GridDisplayTime"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public int PathQueueLength {
+        public int GridQueueLength {
             get {
-                return ((int)(this["PathQueueLength"]));
+                return ((int)(this["GridQueueLength"]));
             }
             set {
-                this["PathQueueLength"] = value;
+                this["GridQueueLength"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public int PathSegmentCount {
+        public int GridSegmentCount {
             get {
-                return ((int)(this["PathSegmentCount"]));
+                return ((int)(this["GridSegmentCount"]));
             }
             set {
-                this["PathSegmentCount"] = value;
+                this["GridSegmentCount"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public float HexGridSize {
+        public float GridHexSize {
             get {
-                return ((float)(this["HexGridSize"]));
+                return ((float)(this["GridHexSize"]));
             }
             set {
-                this["HexGridSize"] = value;
+                this["GridHexSize"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("146, 236, 210")]
-        public global::System.Drawing.Color BrightColor {
+        public global::System.Drawing.Color GridBrightColor {
             get {
-                return ((global::System.Drawing.Color)(this["BrightColor"]));
+                return ((global::System.Drawing.Color)(this["GridBrightColor"]));
             }
             set {
-                this["BrightColor"] = value;
+                this["GridBrightColor"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Black")]
-        public global::System.Drawing.Color DarkColor {
+        public global::System.Drawing.Color GridDarkColor {
             get {
-                return ((global::System.Drawing.Color)(this["DarkColor"]));
+                return ((global::System.Drawing.Color)(this["GridDarkColor"]));
             }
             set {
-                this["DarkColor"] = value;
+                this["GridDarkColor"] = value;
             }
         }
         

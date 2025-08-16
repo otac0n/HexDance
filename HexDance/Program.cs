@@ -19,42 +19,42 @@ namespace HexDance
             CustomParser = ParseTimeSpanOption,
         };
 
-        public static readonly Option<TimeSpan> DisplayTime = new(
-            name: "--displayTime")
+        public static readonly Option<TimeSpan> GridDisplayTime = new(
+            name: "--gridDisplayTime")
         {
-            DefaultValueFactory = _ => Settings.Default.DisplayTime,
+            DefaultValueFactory = _ => Settings.Default.GridDisplayTime,
             CustomParser = ParseTimeSpanOption,
         };
 
-        public static readonly Option<int> PathQueueLength = new(
-            name: "--pathQueueLength")
+        public static readonly Option<int> GridQueueLength = new(
+            name: "--gridQueueLength")
         {
-            DefaultValueFactory = _ => Settings.Default.PathQueueLength,
+            DefaultValueFactory = _ => Settings.Default.GridQueueLength,
         };
 
-        public static readonly Option<int> PathSegmentCount = new(
-            name: "--pathSegmentCount")
+        public static readonly Option<int> GridSegmentCount = new(
+            name: "--gridSegmentCount")
         {
-            DefaultValueFactory = _ => Settings.Default.PathSegmentCount,
+            DefaultValueFactory = _ => Settings.Default.GridSegmentCount,
         };
 
-        public static readonly Option<float> HexGridSize = new(
-            name: "--hexGridSize")
+        public static readonly Option<float> GridHexSize = new(
+            name: "--gridHexSize")
         {
-            DefaultValueFactory = _ => Settings.Default.HexGridSize,
+            DefaultValueFactory = _ => Settings.Default.GridHexSize,
         };
 
-        public static readonly Option<Color> BrightColor = new(
-            name: "--brightColor")
+        public static readonly Option<Color> GridBrightColor = new(
+            name: "--gridBrightColor")
         {
-            DefaultValueFactory = _ => Settings.Default.BrightColor,
+            DefaultValueFactory = _ => Settings.Default.GridBrightColor,
             CustomParser = ParseColorOption,
         };
 
-        public static readonly Option<Color> DarkColor = new(
-            name: "--darkColor")
+        public static readonly Option<Color> GridDarkColor = new(
+            name: "--gridDarkColor")
         {
-            DefaultValueFactory = _ => Settings.Default.DarkColor,
+            DefaultValueFactory = _ => Settings.Default.GridDarkColor,
             CustomParser = ParseColorOption,
         };
 
@@ -90,14 +90,14 @@ namespace HexDance
         };
 
         public static readonly Option<Color> EffectLineColor = new(
-            name: "--lineColor")
+            name: "--effectLineColor")
         {
             DefaultValueFactory = _ => Settings.Default.EffectLineColor,
             CustomParser = ParseColorOption,
         };
 
         public static readonly Option<Color> EffectFillColor = new(
-            name: "--fillColor")
+            name: "--effectFillColor")
         {
             DefaultValueFactory = _ => Settings.Default.EffectFillColor,
             CustomParser = ParseColorOption,
@@ -122,12 +122,12 @@ namespace HexDance
         {
             var rootCommand = new RootCommand();
             rootCommand.Options.Add(UpdateInterval);
-            rootCommand.Options.Add(DisplayTime);
-            rootCommand.Options.Add(PathQueueLength);
-            rootCommand.Options.Add(PathSegmentCount);
-            rootCommand.Options.Add(HexGridSize);
-            rootCommand.Options.Add(BrightColor);
-            rootCommand.Options.Add(DarkColor);
+            rootCommand.Options.Add(GridDisplayTime);
+            rootCommand.Options.Add(GridQueueLength);
+            rootCommand.Options.Add(GridSegmentCount);
+            rootCommand.Options.Add(GridHexSize);
+            rootCommand.Options.Add(GridBrightColor);
+            rootCommand.Options.Add(GridDarkColor);
             rootCommand.Options.Add(ChromaKeyColor);
             rootCommand.Options.Add(DoubleBuffered);
             rootCommand.Options.Add(Opacity);
@@ -141,12 +141,12 @@ namespace HexDance
             {
                 var settings = Settings.Default;
                 settings.UpdateInterval = parseResult.GetValue(UpdateInterval);
-                settings.DisplayTime = parseResult.GetValue(DisplayTime);
-                settings.PathQueueLength = parseResult.GetValue(PathQueueLength);
-                settings.PathSegmentCount = parseResult.GetValue(PathSegmentCount);
-                settings.HexGridSize = parseResult.GetValue(HexGridSize);
-                settings.BrightColor = parseResult.GetValue(BrightColor);
-                settings.DarkColor = parseResult.GetValue(DarkColor);
+                settings.GridDisplayTime = parseResult.GetValue(GridDisplayTime);
+                settings.GridQueueLength = parseResult.GetValue(GridQueueLength);
+                settings.GridSegmentCount = parseResult.GetValue(GridSegmentCount);
+                settings.GridHexSize = parseResult.GetValue(GridHexSize);
+                settings.GridBrightColor = parseResult.GetValue(GridBrightColor);
+                settings.GridDarkColor = parseResult.GetValue(GridDarkColor);
                 settings.ChromaKeyColor = parseResult.GetValue(ChromaKeyColor);
                 settings.DoubleBuffered = parseResult.GetValue(DoubleBuffered);
                 settings.Opacity = parseResult.GetValue(Opacity);

@@ -150,20 +150,20 @@ namespace HexDance
             var last = this.lastCursor;
 
             var distance = new SizeF(cursor.X - last.X, cursor.Y - last.Y);
-            var randomWalkDistance = this.settings.HexGridSize * MathF.Sqrt(this.settings.PathSegmentCount);
-            var lerpCount = Math.Max(1, Math.Min(this.settings.PathQueueLength, 2 * MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / randomWalkDistance));
+            var randomWalkDistance = this.settings.GridHexSize * MathF.Sqrt(this.settings.GridSegmentCount);
+            var lerpCount = Math.Max(1, Math.Min(this.settings.GridQueueLength, 2 * MathF.Sqrt(distance.Width * distance.Width + distance.Height * distance.Height) / randomWalkDistance));
             for (var h = 1; h <= lerpCount; h++)
             {
                 var path = new GraphicsPath();
                 var origin = Lerp(h / lerpCount, last, cursor);
-                var c = GetNearestHex(origin, this.settings.HexGridSize);
+                var c = GetNearestHex(origin, this.settings.GridHexSize);
                 var (x, y) = (c.X, c.Y);
-                for (var i = 0; i < this.settings.PathSegmentCount; i++)
+                for (var i = 0; i < this.settings.GridSegmentCount; i++)
                 {
                     var dir = Random.Shared.Next(3) * MathF.Tau / 3 + (i % 2 == 0 ? MathF.Tau / 6 : 0);
                     var (dx, dy) = MathF.SinCos(dir);
-                    dx *= this.settings.HexGridSize;
-                    dy *= this.settings.HexGridSize;
+                    dx *= this.settings.GridHexSize;
+                    dy *= this.settings.GridHexSize;
                     path.AddLine(x, y, x + dx, y + dy);
                     (x, y) = (x + dx, y + dy);
                 }
@@ -190,12 +190,12 @@ namespace HexDance
             var paths = this.paths;
             var particles = this.particles;
             var now = this.clock.Elapsed;
-            var expireTime = now - this.settings.DisplayTime;
+            var gridExpireTime = now - this.settings.GridDisplayTime;
             var effectExpireTime = now - this.settings.EffectDisplayTime;
 
-            paths.RemoveAll(entry => entry.Time <= expireTime);
+            paths.RemoveAll(entry => entry.Time <= gridExpireTime);
             particles.RemoveAll(entry => entry.Time <= effectExpireTime);
-            var extra = paths.Count - this.settings.PathQueueLength;
+            var extra = paths.Count - this.settings.GridQueueLength;
             if (extra > 0)
             {
                 paths.RemoveRange(0, extra);
@@ -256,7 +256,7 @@ namespace HexDance
             using (var g = Graphics.FromImage(bmp))
             {
                 var offset = new Matrix();
-                var scale = 3 / this.settings.HexGridSize;
+                var scale = 3 / this.settings.GridHexSize;
                 offset.Scale(scale, scale);
                 offset.Translate(-Cursor.Position.X + 12 / scale, -Cursor.Position.Y + 12 / scale);
                 g.Transform = offset;
@@ -280,7 +280,7 @@ namespace HexDance
             }
         }
 
-        public Color Palette(TimeSpan elapsed) => Blend(elapsed / this.settings.DisplayTime, this.settings.DarkColor, this.settings.BrightColor);
+        public Color Palette(TimeSpan elapsed) => Blend(elapsed / this.settings.GridDisplayTime, this.settings.GridDarkColor, this.settings.GridBrightColor);
 
         public static Color Blend(double amount, Color a, Color b) => Blend((float)amount, a, b);
 

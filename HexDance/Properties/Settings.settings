@@ -5,22 +5,22 @@
     <Setting Name="UpdateInterval" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">00:00:00.0500000</Value>
     </Setting>
-    <Setting Name="DisplayTime" Type="System.TimeSpan" Scope="User">
+    <Setting Name="GridDisplayTime" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">00:00:00.7500000</Value>
     </Setting>
-    <Setting Name="PathQueueLength" Type="System.Int32" Scope="User">
+    <Setting Name="GridQueueLength" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">15</Value>
     </Setting>
-    <Setting Name="PathSegmentCount" Type="System.Int32" Scope="User">
+    <Setting Name="GridSegmentCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="HexGridSize" Type="System.Single" Scope="User">
+    <Setting Name="GridHexSize" Type="System.Single" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="BrightColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="GridBrightColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">146, 236, 210</Value>
     </Setting>
-    <Setting Name="DarkColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="GridDarkColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Black</Value>
     </Setting>
     <Setting Name="DoubleBuffered" Type="System.Boolean" Scope="User">
