@@ -10,6 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FixMe" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="GitVersion.MsBuild" Version="6.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="All" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta6.25358.103" />
     <PackageReference Include="TimeSpanParserUtil" Version="1.2.0" />
