@@ -47,13 +47,17 @@ namespace HexDance
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
-            public int X, Y;
+            public int X;
+            public int Y;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
         {
-            public int Left, Top, Right, Bottom;
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
 
         [StructLayout(LayoutKind.Sequential)]

@@ -42,6 +42,37 @@ namespace HexDance
             this.mouseHandle = NativeMethods.SetWindowsHookEx(NativeMethods.WH_MOUSE_LL, this.mouseProc, NativeMethods.GetModuleHandle(mainModule.ModuleName), 0);
         }
 
+        /// <inheritdoc/>
+        protected override bool ShowWithoutActivation => true;
+
+        /// <inheritdoc/>
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= NativeMethods.WS_EX_TRANSPARENT | NativeMethods.WS_EX_NOACTIVATE;
+                return cp;
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (this.components != null))
+            {
+                this.components.Dispose();
+            }
+
+            if (this.mouseHandle != nint.Zero)
+            {
+                NativeMethods.UnhookWindowsHookEx(this.mouseHandle);
+                this.mouseHandle = nint.Zero;
+            }
+
+            base.Dispose(disposing);
+        }
+
         private static GraphicsPath MakeHex(float radius)
         {
             PointF HexPoint(int i)
@@ -61,35 +92,71 @@ namespace HexDance
             return singleHex;
         }
 
-        /// <inheritdoc/>
-        protected override bool ShowWithoutActivation => true;
+        private static Color Blend(double amount, Color a, Color b) => Blend((float)amount, a, b);
 
-        /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+        private static Color Blend(float amount, Color a, Color b)
         {
-            if (disposing && (this.components != null))
-            {
-                this.components.Dispose();
-            }
+            const float Gamma = 1.8f;
 
-            if (this.mouseHandle != nint.Zero)
-            {
-                NativeMethods.UnhookWindowsHookEx(this.mouseHandle);
-                this.mouseHandle = nint.Zero;
-            }
+            var red = 0.0f;
+            var green = 0.0f;
+            var blue = 0.0f;
 
-            base.Dispose(disposing);
+            red += MathF.Pow(a.R, Gamma) * amount;
+            green += MathF.Pow(a.G, Gamma) * amount;
+            blue += MathF.Pow(a.B, Gamma) * amount;
+
+            red += MathF.Pow(b.R, Gamma) * (1 - amount);
+            green += MathF.Pow(b.G, Gamma) * (1 - amount);
+            blue += MathF.Pow(b.B, Gamma) * (1 - amount);
+
+            return Color.FromArgb(
+                (int)Math.Round(Math.Pow(red, 1 / Gamma)),
+                (int)Math.Round(Math.Pow(green, 1 / Gamma)),
+                (int)Math.Round(Math.Pow(blue, 1 / Gamma)));
         }
 
-        protected override CreateParams CreateParams
+        private static PointF GetNearestHex(PointF point, float hexRadius)
         {
-            get
+            var x = point.X / hexRadius;
+            var y = point.Y / hexRadius;
+            var q = MathF.Sqrt(3) / 3 * x - 1f / 3 * y;
+            var r = 2f / 3 * y;
+            var s = -(q + r);
+
+            var qRound = (int)MathF.Round(q);
+            var rRound = (int)MathF.Round(r);
+            var sRound = (int)MathF.Round(s);
+            var qDiff = MathF.Abs(qRound - q);
+            var rDiff = MathF.Abs(rRound - r);
+            var sDiff = MathF.Abs(sRound - s);
+
+            if (qDiff > rDiff && qDiff > sDiff)
             {
-                var cp = base.CreateParams;
-                cp.ExStyle |= NativeMethods.WS_EX_TRANSPARENT | NativeMethods.WS_EX_NOACTIVATE;
-                return cp;
+                q = -(rRound + sRound);
+                r = rRound;
             }
+            else if (rDiff > sDiff)
+            {
+                q = qRound;
+                r = -(qRound + sRound);
+            }
+            else
+            {
+                q = qRound;
+                r = rRound;
+            }
+
+            x = MathF.Sqrt(3) * (q * hexRadius) + MathF.Sqrt(3) / 2 * (r * hexRadius);
+            y = 3f / 2 * (r * hexRadius);
+            return new(x, y);
         }
+
+        private static PointF Lerp(float amount, PointF start, PointF endPoint) =>
+            new(start.X + amount * (endPoint.X - start.X), start.Y + amount * (endPoint.Y - start.Y));
+
+        private static bool MouseIsCaptured() =>
+            NativeMethods.GetCapture() != nint.Zero;
 
         private void CoverAllScreens()
         {
@@ -206,7 +273,7 @@ namespace HexDance
                 for (var i = 0; i < paths.Count; i++)
                 {
                     var entry = paths[i];
-                    using var pen = new Pen(Palette(now - entry.Time));
+                    using var pen = new Pen(this.Palette(now - entry.Time));
                     g.DrawPath(pen, entry.Path);
                 }
 
@@ -265,7 +332,7 @@ namespace HexDance
                 for (var i = 0; i < paths.Count; i++)
                 {
                     var entry = this.paths[i];
-                    using var pen = new Pen(Palette(now - entry.Time));
+                    using var pen = new Pen(this.Palette(now - entry.Time));
                     g.DrawPath(pen, entry.Path);
                 }
             }
@@ -280,75 +347,9 @@ namespace HexDance
             }
         }
 
-        public Color Palette(TimeSpan elapsed) => Blend(elapsed / this.settings.GridDisplayTime, this.settings.GridDarkColor, this.settings.GridBrightColor);
+        private Color Palette(TimeSpan elapsed) => Blend(elapsed / this.settings.GridDisplayTime, this.settings.GridDarkColor, this.settings.GridBrightColor);
 
-        public static Color Blend(double amount, Color a, Color b) => Blend((float)amount, a, b);
-
-        public static Color Blend(float amount, Color a, Color b)
-        {
-            const float Gamma = 1.8f;
-
-            var red = 0.0f;
-            var green = 0.0f;
-            var blue = 0.0f;
-
-            red += MathF.Pow(a.R, Gamma) * amount;
-            green += MathF.Pow(a.G, Gamma) * amount;
-            blue += MathF.Pow(a.B, Gamma) * amount;
-
-            red += MathF.Pow(b.R, Gamma) * (1 - amount);
-            green += MathF.Pow(b.G, Gamma) * (1 - amount);
-            blue += MathF.Pow(b.B, Gamma) * (1 - amount);
-
-            return Color.FromArgb(
-                (int)Math.Round(Math.Pow(red, 1 / Gamma)),
-                (int)Math.Round(Math.Pow(green, 1 / Gamma)),
-                (int)Math.Round(Math.Pow(blue, 1 / Gamma)));
-        }
-
-        public static PointF GetNearestHex(PointF point, float hexRadius)
-        {
-            var x = point.X / hexRadius;
-            var y = point.Y / hexRadius;
-            var q = MathF.Sqrt(3) / 3 * x - 1f / 3 * y;
-            var r = 2f / 3 * y;
-            var s = -(q + r);
-
-            var qRound = (int)MathF.Round(q);
-            var rRound = (int)MathF.Round(r);
-            var sRound = (int)MathF.Round(s);
-            var qDiff = MathF.Abs(qRound - q);
-            var rDiff = MathF.Abs(rRound - r);
-            var sDiff = MathF.Abs(sRound - s);
-
-            if (qDiff > rDiff && qDiff > sDiff)
-            {
-                q = -(rRound + sRound);
-                r = rRound;
-            }
-            else if (rDiff > sDiff)
-            {
-                q = qRound;
-                r = -(qRound + sRound);
-            }
-            else
-            {
-                q = qRound;
-                r = rRound;
-            }
-
-            x = MathF.Sqrt(3) * (q * hexRadius) + MathF.Sqrt(3) / 2 * (r * hexRadius);
-            y = 3f / 2 * (r * hexRadius);
-            return new(x, y);
-        }
-
-        public static PointF Lerp(float amount, PointF start, PointF endPoint) =>
-            new(start.X + amount * (endPoint.X - start.X), start.Y + amount * (endPoint.Y - start.Y));
-
-        public static bool MouseIsCaptured() =>
-            NativeMethods.GetCapture() != nint.Zero;
-
-        public bool FocusIsFullscreen()
+        private bool FocusIsFullscreen()
         {
             var hWnd = NativeMethods.GetForegroundWindow();
             if (hWnd == nint.Zero ||

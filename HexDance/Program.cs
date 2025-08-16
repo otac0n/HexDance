@@ -110,10 +110,6 @@ namespace HexDance
             CustomParser = ParseTimeSpanOption,
         };
 
-        private static TimeSpan ParseTimeSpanOption(ArgumentResult result) => TimeSpanParser.Parse(string.Join(" ", result.Tokens.Select(t => t.Value)));
-
-        private static Color ParseColorOption(ArgumentResult result) => ColorTranslator.FromHtml(result.Tokens.Single().Value);
-
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -162,5 +158,9 @@ namespace HexDance
 
             return new CommandLineConfiguration(rootCommand).Invoke(args);
         }
+
+        private static TimeSpan ParseTimeSpanOption(ArgumentResult result) => TimeSpanParser.Parse(string.Join(" ", result.Tokens.Select(t => t.Value)));
+
+        private static Color ParseColorOption(ArgumentResult result) => ColorTranslator.FromHtml(result.Tokens.Single().Value);
     }
 }
