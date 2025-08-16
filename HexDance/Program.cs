@@ -116,6 +116,8 @@ namespace HexDance
         [STAThread]
         public static int Main(string[] args)
         {
+            NativeMethods.AttachConsole(NativeMethods.ATTACH_PARENT_PROCESS);
+
             var rootCommand = new RootCommand();
             rootCommand.Options.Add(ChromaKeyColor);
             rootCommand.Options.Add(DoubleBuffered);

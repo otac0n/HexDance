@@ -17,6 +17,7 @@ namespace HexDance
         public const int WM_MBUTTONUP = 0x0208;
         public const int WM_XBUTTONDOWN = 0x020A;
         public const int WM_XBUTTONUP = 0x020B;
+        public const int ATTACH_PARENT_PROCESS = -1;
 
         public delegate nint LowLevelMouseProc(int nCode, nint wParam, nint lParam);
 
@@ -40,6 +41,9 @@ namespace HexDance
 
         [DllImport("user32.dll")]
         public static extern nint CallNextHookEx(nint hHook, int nCode, nint wParam, nint lParam);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool AttachConsole(int dwProcessId);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern nint GetModuleHandle(string lpModuleName);
