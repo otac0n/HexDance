@@ -25,61 +25,85 @@ namespace HexDance.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.0500000")]
-        public global::System.TimeSpan UpdateInterval {
+        [global::System.Configuration.DefaultSettingValueAttribute("Magenta")]
+        public global::System.Drawing.Color ChromaKeyColor {
             get {
-                return ((global::System.TimeSpan)(this["UpdateInterval"]));
+                return ((global::System.Drawing.Color)(this["ChromaKeyColor"]));
             }
             set {
-                this["UpdateInterval"] = value;
+                this["ChromaKeyColor"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.7500000")]
-        public global::System.TimeSpan GridDisplayTime {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DoubleBuffered {
             get {
-                return ((global::System.TimeSpan)(this["GridDisplayTime"]));
+                return ((bool)(this["DoubleBuffered"]));
             }
             set {
-                this["GridDisplayTime"] = value;
+                this["DoubleBuffered"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("15")]
-        public int GridQueueLength {
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.5000000")]
+        public global::System.TimeSpan EffectDisplayTime {
             get {
-                return ((int)(this["GridQueueLength"]));
+                return ((global::System.TimeSpan)(this["EffectDisplayTime"]));
             }
             set {
-                this["GridQueueLength"] = value;
+                this["EffectDisplayTime"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public int GridSegmentCount {
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public float EffectDistance {
             get {
-                return ((int)(this["GridSegmentCount"]));
+                return ((float)(this["EffectDistance"]));
             }
             set {
-                this["GridSegmentCount"] = value;
+                this["EffectDistance"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public float GridHexSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("133, 181, 171")]
+        public global::System.Drawing.Color EffectFillColor {
             get {
-                return ((float)(this["GridHexSize"]));
+                return ((global::System.Drawing.Color)(this["EffectFillColor"]));
             }
             set {
-                this["GridHexSize"] = value;
+                this["EffectFillColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public float EffectHexSize {
+            get {
+                return ((float)(this["EffectHexSize"]));
+            }
+            set {
+                this["EffectHexSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("167, 226, 215")]
+        public global::System.Drawing.Color EffectLineColor {
+            get {
+                return ((global::System.Drawing.Color)(this["EffectLineColor"]));
+            }
+            set {
+                this["EffectLineColor"] = value;
             }
         }
         
@@ -109,25 +133,49 @@ namespace HexDance.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool DoubleBuffered {
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.7500000")]
+        public global::System.TimeSpan GridDisplayTime {
             get {
-                return ((bool)(this["DoubleBuffered"]));
+                return ((global::System.TimeSpan)(this["GridDisplayTime"]));
             }
             set {
-                this["DoubleBuffered"] = value;
+                this["GridDisplayTime"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Magenta")]
-        public global::System.Drawing.Color ChromaKeyColor {
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public float GridHexSize {
             get {
-                return ((global::System.Drawing.Color)(this["ChromaKeyColor"]));
+                return ((float)(this["GridHexSize"]));
             }
             set {
-                this["ChromaKeyColor"] = value;
+                this["GridHexSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int GridQueueLength {
+            get {
+                return ((int)(this["GridQueueLength"]));
+            }
+            set {
+                this["GridQueueLength"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int GridSegmentCount {
+            get {
+                return ((int)(this["GridSegmentCount"]));
+            }
+            set {
+                this["GridSegmentCount"] = value;
             }
         }
         
@@ -145,61 +193,13 @@ namespace HexDance.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("8")]
-        public float EffectHexSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.0500000")]
+        public global::System.TimeSpan UpdateInterval {
             get {
-                return ((float)(this["EffectHexSize"]));
+                return ((global::System.TimeSpan)(this["UpdateInterval"]));
             }
             set {
-                this["EffectHexSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
-        public float EffectDistance {
-            get {
-                return ((float)(this["EffectDistance"]));
-            }
-            set {
-                this["EffectDistance"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.5000000")]
-        public global::System.TimeSpan EffectDisplayTime {
-            get {
-                return ((global::System.TimeSpan)(this["EffectDisplayTime"]));
-            }
-            set {
-                this["EffectDisplayTime"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("133, 181, 171")]
-        public global::System.Drawing.Color EffectFillColor {
-            get {
-                return ((global::System.Drawing.Color)(this["EffectFillColor"]));
-            }
-            set {
-                this["EffectFillColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("167, 226, 215")]
-        public global::System.Drawing.Color EffectLineColor {
-            get {
-                return ((global::System.Drawing.Color)(this["EffectLineColor"]));
-            }
-            set {
-                this["EffectLineColor"] = value;
+                this["UpdateInterval"] = value;
             }
         }
     }
