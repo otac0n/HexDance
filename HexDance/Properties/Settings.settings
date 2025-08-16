@@ -32,5 +32,20 @@
     <Setting Name="Opacity" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0.5</Value>
     </Setting>
+    <Setting Name="EffectHexSize" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">8</Value>
+    </Setting>
+    <Setting Name="EffectDistance" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="EffectDisplayTime" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">00:00:00.5000000</Value>
+    </Setting>
+    <Setting Name="EffectFillColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">133, 181, 171</Value>
+    </Setting>
+    <Setting Name="EffectLineColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">167, 226, 215</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

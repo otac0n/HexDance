@@ -12,7 +12,7 @@ namespace HexDance
         private readonly Settings settings;
 
         private readonly List<(TimeSpan Time, GraphicsPath Path)> paths = [];
-        private readonly List<(TimeSpan Time, Point Origin, SizeF Direction)> particles = [];
+        private readonly List<(TimeSpan Time, Point Origin, SizeF Direction, float Angle, float Distance)> particles = [];
         private readonly GraphicsPath singleHex;
         private readonly Stopwatch clock = Stopwatch.StartNew();
         private readonly NativeMethods.LowLevelMouseProc mouseProc;
@@ -35,7 +35,7 @@ namespace HexDance
 
             this.lastCursor = Cursor.Position;
 
-            this.singleHex = MakeHex(settings.HexGridSize); // TODO: Particle specific radius.
+            this.singleHex = MakeHex(settings.EffectHexSize);
 
             var mainModule = Process.GetCurrentProcess().MainModule!;
             this.mouseProc = this.MouseHook;
@@ -171,13 +171,15 @@ namespace HexDance
                 paths.Add((now, path));
             }
 
-            if (this.buttonState != MouseButtons.None)
-
+            if (this.buttonState != MouseButtons.None && this.settings.EffectHexSize >= 0)
             {
                 var origin = cursor;
                 var (dx, dy) = MathF.SinCos(Random.Shared.NextSingle() * MathF.Tau);
-                this.particles.Add((now, origin, new(dx, dy)));
+                var dist = Random.Shared.NextSingle() * 0.8f + 0.2f;
+                var angle = Random.Shared.NextSingle() * MathF.Tau;
+                this.particles.Add((now, origin, new(dx, dy), angle, dist));
             }
+
             this.lastCursor = cursor;
             this.Invalidate();
         }
@@ -189,9 +191,10 @@ namespace HexDance
             var particles = this.particles;
             var now = this.clock.Elapsed;
             var expireTime = now - this.settings.DisplayTime;
+            var effectExpireTime = now - this.settings.EffectDisplayTime;
 
             paths.RemoveAll(entry => entry.Time <= expireTime);
-            particles.RemoveAll(entry => entry.Time <= expireTime); // TODO: Particle specific time.
+            particles.RemoveAll(entry => entry.Time <= effectExpireTime);
             var extra = paths.Count - this.settings.PathQueueLength;
             if (extra > 0)
             {
@@ -210,20 +213,20 @@ namespace HexDance
                 var state = g.Save();
                 try
                 {
-                    for (var i = 0; i < particles.Count; i++)
+                    for (var i = particles.Count - 1; i >= 0; i--)
                     {
                         var particle = particles[i];
-                        var amount = (float)((now - particle.Time) / this.settings.DisplayTime); // TODO: Particle specific time.
-                        var distance = particle.Direction * amount * (10 * this.settings.HexGridSize); // TODO: Particle specific distance.
+                        var amount = (float)((now - particle.Time) / this.settings.EffectDisplayTime);
+                        var distance = particle.Direction * amount * particle.Distance * this.settings.EffectDistance;
                         var angle = MathF.Atan2(particle.Direction.Width, particle.Direction.Height) * 360 / MathF.Tau;
                         var matrix = new Matrix();
                         matrix.Translate(particle.Origin.X + distance.Width, particle.Origin.Y + distance.Height);
                         matrix.Rotate(-angle);
                         matrix.Scale(1, 1 - amount);
-                        matrix.Rotate(angle);
+                        matrix.Rotate(particle.Angle);
 
-                        using var brush = new SolidBrush(Color.FromArgb(unchecked((int)0xFF85B5AB))); // TODO: Particle color configuration.
-                        using var pen = new Pen(Color.FromArgb(unchecked((int)0xFFA7E2D7))); // TODO: Particle color configuration.
+                        using var brush = new SolidBrush(this.settings.EffectFillColor);
+                        using var pen = new Pen(this.settings.EffectLineColor);
 
                         g.Transform = matrix;
                         g.FillPath(brush, this.singleHex);

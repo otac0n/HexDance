@@ -77,6 +77,39 @@ namespace HexDance
             DefaultValueFactory = _ => Settings.Default.Opacity,
         };
 
+        public static readonly Option<float> EffectHexSize = new(
+            name: "--effectHexSize")
+        {
+            DefaultValueFactory = _ => Settings.Default.EffectHexSize,
+        };
+
+        public static readonly Option<float> EffectDistance = new(
+            name: "--effectDistance")
+        {
+            DefaultValueFactory = _ => Settings.Default.EffectDistance,
+        };
+
+        public static readonly Option<Color> EffectLineColor = new(
+            name: "--lineColor")
+        {
+            DefaultValueFactory = _ => Settings.Default.EffectLineColor,
+            CustomParser = ParseColorOption,
+        };
+
+        public static readonly Option<Color> EffectFillColor = new(
+            name: "--fillColor")
+        {
+            DefaultValueFactory = _ => Settings.Default.EffectFillColor,
+            CustomParser = ParseColorOption,
+        };
+
+        public static readonly Option<TimeSpan> EffectDisplayTime = new(
+            name: "--effectDisplayTime")
+        {
+            DefaultValueFactory = _ => Settings.Default.EffectDisplayTime,
+            CustomParser = ParseTimeSpanOption,
+        };
+
         private static TimeSpan ParseTimeSpanOption(ArgumentResult result) => TimeSpanParser.Parse(string.Join(" ", result.Tokens.Select(t => t.Value)));
 
         private static Color ParseColorOption(ArgumentResult result) => ColorTranslator.FromHtml(result.Tokens.Single().Value);
@@ -98,6 +131,11 @@ namespace HexDance
             rootCommand.Options.Add(ChromaKeyColor);
             rootCommand.Options.Add(DoubleBuffered);
             rootCommand.Options.Add(Opacity);
+            rootCommand.Options.Add(EffectHexSize);
+            rootCommand.Options.Add(EffectDistance);
+            rootCommand.Options.Add(EffectFillColor);
+            rootCommand.Options.Add(EffectLineColor);
+            rootCommand.Options.Add(EffectDisplayTime);
 
             rootCommand.SetAction(static parseResult =>
             {
@@ -112,6 +150,11 @@ namespace HexDance
                 settings.ChromaKeyColor = parseResult.GetValue(ChromaKeyColor);
                 settings.DoubleBuffered = parseResult.GetValue(DoubleBuffered);
                 settings.Opacity = parseResult.GetValue(Opacity);
+                settings.EffectHexSize = parseResult.GetValue(EffectHexSize);
+                settings.EffectDistance = parseResult.GetValue(EffectDistance);
+                settings.EffectFillColor = parseResult.GetValue(EffectFillColor);
+                settings.EffectLineColor = parseResult.GetValue(EffectLineColor);
+                settings.EffectDisplayTime = parseResult.GetValue(EffectDisplayTime);
 
                 ApplicationConfiguration.Initialize();
                 Application.Run(new HexDisplay(settings));

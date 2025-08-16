@@ -142,5 +142,65 @@ namespace HexDance.Properties {
                 this["Opacity"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public float EffectHexSize {
+            get {
+                return ((float)(this["EffectHexSize"]));
+            }
+            set {
+                this["EffectHexSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public float EffectDistance {
+            get {
+                return ((float)(this["EffectDistance"]));
+            }
+            set {
+                this["EffectDistance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00.5000000")]
+        public global::System.TimeSpan EffectDisplayTime {
+            get {
+                return ((global::System.TimeSpan)(this["EffectDisplayTime"]));
+            }
+            set {
+                this["EffectDisplayTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("133, 181, 171")]
+        public global::System.Drawing.Color EffectFillColor {
+            get {
+                return ((global::System.Drawing.Color)(this["EffectFillColor"]));
+            }
+            set {
+                this["EffectFillColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("167, 226, 215")]
+        public global::System.Drawing.Color EffectLineColor {
+            get {
+                return ((global::System.Drawing.Color)(this["EffectLineColor"]));
+            }
+            set {
+                this["EffectLineColor"] = value;
+            }
+        }
     }
 }
