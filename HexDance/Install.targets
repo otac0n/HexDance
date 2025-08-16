@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <NSISCompiler Condition=" '$(NSISCompiler)' == '' ">C:\Program Files (x86)\NSIS\makensis.exe</NSISCompiler>
+  </PropertyGroup>
+  <Target Name="PackageWithNSIS" AfterTargets="Build">
+    <PropertyGroup>
+      <InstallerCommand>&quot;$(NSISCompiler)&quot; /DPACKAGE_ID=&quot;$(PackageId)&quot; /DCONFIGURATION=&quot;$(Configuration)&quot; /DVERSION=&quot;$(Version)&quot; /DOUTPUT_PATH=&quot;$(MSBuildProjectDirectory)\$(OutputPath.TrimEnd('\'))&quot; &quot;$(MSBuildProjectDirectory)\Install.nsi&quot;</InstallerCommand>
+    </PropertyGroup>
+    <Exec Command="$(InstallerCommand)" />
+  </Target>
+</Project>

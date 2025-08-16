@@ -31,4 +31,5 @@
     <Content Include="Icon.ico" />
     <AdditionalFiles Include="..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+  <Import Project="Install.targets" />
 </Project>
